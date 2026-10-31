@@ -1,0 +1,27 @@
+{
+  "slug": "downhill-sled-dash",
+  "name": "Downhill Sled Dash",
+  "description": "Ride an endless mountain. Dodge trees, hit the jumps, chase your best run.",
+  "dir": "dist",
+  "productionBranch": "main",
+  "genre": "Racing",
+  "icon": "store/icon.png",
+  "thumbnails": ["store/thumb-1.png", "store/thumb-2.png", "store/thumb-3.png"],
+  "controls": [
+    { "keys": ["A", "D"], "action": "Steer" },
+    { "keys": ["Left", "Right"], "action": "Steer" },
+    { "keys": ["Space", "W", "Up"], "action": "Hop" },
+    { "keys": ["Left", "Right"], "action": "Spin in big air" },
+    { "keys": ["Drag"], "action": "Steer (touch)" },
+    { "keys": ["P", "Esc"], "action": "Pause" },
+    { "keys": ["Enter"], "action": "Retry" }
+  ],
+  "badges": [
+    { "id": "first-km", "name": "First Kilometre", "description": "Reach 1,000 m.", "icon": "store/badge-first-km.png" },
+    { "id": "night-rider", "name": "Night Rider", "description": "Reach the night (4,500 m).", "icon": "store/badge-night-rider.png" },
+    { "id": "double-spin", "name": "Double Spin", "description": "Land a 720 in one jump.", "icon": "store/badge-double-spin.png" },
+    { "id": "gate-master", "name": "Gate Master", "description": "Pass 10 gates in a row.", "icon": "store/badge-gate-master.png" },
+    { "id": "collector", "name": "Collector", "description": "Own every sled.", "icon": "store/badge-collector.png" },
+    { "id": "untouchable", "name": "Untouchable", "description": "Reach 2,000 m without using a shield.", "icon": "store/badge-untouchable.png" }
+  ]
+}
