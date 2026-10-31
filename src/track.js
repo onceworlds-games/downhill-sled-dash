@@ -47,3 +47,11 @@ export function terrainOffset(d, x) {
 export function groundY(d, x) {
   return slopeY(d) + terrainOffset(d, x);
 }
+
+/** World position of track point (d, x) with height h above the snow, written into out = [x, y, z]. */
+export function worldPoint(out, d, x, h = 0) {
+  out[0] = centre(d) + x;
+  out[1] = groundY(d, x) + h;
+  out[2] = -d;
+  return out;
+}
