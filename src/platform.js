@@ -11,6 +11,9 @@ const guard = (fn, fallback) => {
   }
 };
 
+// ?debug installs the screenshot tools' hook in game.js; such a page never awards badges or posts scores.
+export const DEBUG = typeof location !== 'undefined' && new URLSearchParams(location.search).has('debug');
+
 export function getPlatform() {
   const ow = typeof window !== 'undefined' ? window.onceworlds || null : null;
   const mem = new Map();
@@ -64,12 +67,14 @@ export function getPlatform() {
       guard(() => ow.on(name, cb));
     },
     award(id) {
+      if (DEBUG) return;
       guard(() => {
         const r = ow.badges.award(id);
         if (r && r.catch) r.catch(noop);
       });
     },
     submit(board, score) {
+      if (DEBUG) return;
       guard(() => {
         const r = ow.leaderboards.submit(board, score);
         if (r && r.catch) r.catch(noop);

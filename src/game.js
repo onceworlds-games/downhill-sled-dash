@@ -6,7 +6,7 @@ import { createWorld } from './world.js';
 import { createCameraRig } from './camera.js';
 import { createUI } from './ui.js';
 import { createInput } from './input.js';
-import { getPlatform } from './platform.js';
+import { getPlatform, DEBUG } from './platform.js';
 import { Particles, SnowFall, Sparkles, Trail, SpeedLines } from './fx.js';
 import { buildSled } from './models.js';
 import { startAudio, setMotion, setMusic, sfx } from './audio.js';
@@ -872,8 +872,8 @@ export async function startGame() {
     last = t;
     frame(t);
   });
-  // a small hook for the screenshot tools: jump to a distance with an autopilot, or stage a crash
-  window.__sled = {
+  // a small hook for the screenshot tools (only with ?debug): jump to a distance with an autopilot, or stage a crash
+  if (DEBUG) window.__sled = {
     get sim() { return sim; },
     get state() { return state; },
     save: () => save,
