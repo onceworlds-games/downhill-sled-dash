@@ -512,6 +512,7 @@ export function createWorld(canvas, { quality = 'high', poster = false } = {}) {
   bestLine.visible = false;
   scene.add(bestGroup, bestLine);
 
+  let startBan = null;
   const startGroup = new THREE.Group();
   {
     const poleMat = lam(0x2a3550);
@@ -521,9 +522,9 @@ export function createWorld(canvas, { quality = 'high', poster = false } = {}) {
       p.castShadow = true;
       startGroup.add(p);
     }
-    const ban = new THREE.Mesh(new THREE.BoxGeometry(HALF * 2 - 3, 2.2, 0.35), new THREE.MeshBasicMaterial({ map: bannerTexture('START', 'DOWNHILL SLED DASH') }));
-    ban.position.set(0, 7.6, 0);
-    startGroup.add(ban);
+    startBan = new THREE.Mesh(new THREE.BoxGeometry(HALF * 2 - 3, 2.2, 0.35), new THREE.MeshBasicMaterial({ map: bannerTexture('START', 'DOWNHILL SLED DASH') }));
+    startBan.position.set(0, 7.6, 0);
+    startGroup.add(startBan);
   }
   scene.add(startGroup);
 
@@ -739,6 +740,16 @@ export function createWorld(canvas, { quality = 'high', poster = false } = {}) {
       if (!mesh || item.i === undefined) return;
       mesh.setMatrixAt(item.i, zero);
       mesh.instanceMatrix.needsUpdate = true;
+    },
+    /** Redraw the canvas text (banners, icons) once the font has loaded. */
+    refreshText() {
+      startBan.material.map = bannerTexture('START', 'DOWNHILL SLED DASH');
+      startBan.material.needsUpdate = true;
+      for (const t of Object.keys(POWERS)) {
+        iconTex[t] = iconTexture(t);
+        for (const g of powerPool) if (g.userData.type === t) g.userData.spr.material.map = iconTex[t];
+      }
+      api.setBest(bestD);
     },
     resize(w, h, dpr) {
       renderer.setPixelRatio(dpr);

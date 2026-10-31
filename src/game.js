@@ -29,13 +29,43 @@ export async function startGame() {
   } catch {}
   plat.setLook({ accent: '#ff5b1f', panel: '#0e1a2b', text: '#f3f8ff' });
 
-  let quality = plat.quality();
   const canvas = $('#gl');
+  const savePromise = plat.load();
+  // ---- UI ----
+  let state = 'title'; // title | garage | play | pause | count | dying | results
+  const handlers = {
+    play: () => startRun(),
+    garage: (fromResults) => enterGarage(fromResults),
+    missions: () => openMissions(),
+    closeMissions: () => closeMissions(),
+    pause: () => pauseGame(false),
+    resume: () => resumeGame(),
+    retry: () => startRun(),
+    home: () => goHome(),
+    hopButton: () => input.queueHop(),
+    sledStep: (n) => sledStep(n),
+    sledAct: () => sledAct(),
+    garageBack: () => garageBack(),
+    outfit: (i) => setOutfit(i),
+  };
+  const ui = createUI($('#ui'), handlers);
+  const input = createInput(canvas, plat);
+  const touchy = plat.touch();
+  document.body.classList.toggle('touch', touchy);
+  ui.hud.ownHop(touchy && !plat.present);
+
+  ui.screen('title');
+  document.getElementById('boot')?.remove();
+  // let the title (and the page's own boot logo) reach the screen before the 3D world is built
+  await new Promise((r) => requestAnimationFrame(() => setTimeout(r, 0)));
+  let quality = plat.quality();
   const world = createWorld(canvas, { quality });
   const { scene, camera } = world;
   const rig = createCameraRig(camera);
   rig.reduced = plat.reducedMotion();
-  let save = normalize(await plat.load());
+  // canvas text waits for the font, but never holds the game
+  Promise.race([document.fonts.load('900 italic 40px "Barlow Condensed"'), new Promise((r) => setTimeout(r, 2500))]).then(() => world.refreshText()).catch(() => {});
+  let save = normalize(await savePromise);
   const lines = new SpeedLines($('#fx'));
 
   // ---- effects ----
@@ -69,29 +99,6 @@ export async function startGame() {
   world.onResize.push((ph) => {
     parts.setScale(ph);
   });
-
-  // ---- UI ----
-  let state = 'title'; // title | garage | play | pause | count | dying | results
-  const handlers = {
-    play: () => startRun(),
-    garage: (fromResults) => enterGarage(fromResults),
-    missions: () => openMissions(),
-    closeMissions: () => closeMissions(),
-    pause: () => pauseGame(false),
-    resume: () => resumeGame(),
-    retry: () => startRun(),
-    home: () => goHome(),
-    hopButton: () => input.queueHop(),
-    sledStep: (n) => sledStep(n),
-    sledAct: () => sledAct(),
-    garageBack: () => garageBack(),
-    outfit: (i) => setOutfit(i),
-  };
-  const ui = createUI($('#ui'), handlers);
-  const input = createInput(canvas, plat);
-  const touchy = plat.touch();
-  document.body.classList.toggle('touch', touchy);
-  ui.hud.ownHop(touchy && !plat.present);
 
   // ---- run state ----
   let course = null;
@@ -867,7 +874,7 @@ export async function startGame() {
 
   resize();
   showTitle();
-  ui.screen('title');
+  document.body.classList.add('ready');
   requestAnimationFrame((t) => {
     last = t;
     frame(t);
